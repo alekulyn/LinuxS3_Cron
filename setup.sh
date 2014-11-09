@@ -3,13 +3,9 @@
 # Make cron
 cat "@monthly root $PWD/monthlybackup.sh\n" >> /etc/cron.d/s3_cron
 cat "@daily root $PWD/dailymirror.sh" >> /etc/cron.d/s3_cron
-
-# Configure location of backup scripts
-S3_CRON="$(pwd)/s3_cron"
-sed "s|monthlybackup.sh|$(pwd)/&|" <$S3_CRON >$S3_CRON
-sed "s|dailymirror.sh|$(pwd)/&|" <$S3_CRON >$S3_CRON
 cp $S3_CRON /etc/cron.d
 
+# Configure location of backup scripts
 DAILY="$(pwd)/dailymirror.sh"
 MONTHLY="$(pwd)/monthlybackup.sh"
 printf "Welcome.  Please fill out the following information to setup your LinuxS3_Cron.\n"
