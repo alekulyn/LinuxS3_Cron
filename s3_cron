@@ -1,0 +1,2 @@
+@monthly root monthlybackup.sh
+@daily root dailymirror.sh
