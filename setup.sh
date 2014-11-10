@@ -3,6 +3,15 @@
 # Introduction
 echo "Welcome.  Please fill out the following information to setup your LinuxS3_Cron."
 
+# Give the user a choice between monthly or daily backups or both
+echo -en "\nDo you want (m)onthly or (d)aily backups, or (b)oth?  "
+read CHOICE
+
+while [ !(("$CHOICE" == "m") || ("$CHOICE" == "d") || ("$CHOICE" == "b")) ]; do
+	echo "I'm sorry, but that is not a valid answer.  Try again:  "
+	read CHOICE
+done
+
 # Configure location of backup scripts
 MONTHLY="$(pwd)/monthlybackup.sh"
 DAILY="$(pwd)/dailymirror.sh"
