@@ -6,9 +6,10 @@ shopt -s expand_aliases
 # Introduction
 echo "Welcome.  Please fill out the following information to setup your LinuxS3_Cron."
 
-# Configure location of backup scripts
+# Configure location of backup scripts and files
 DAILY="$(pwd)/dailymirror.sh"
 MONTHLY="$(pwd)/monthlybackup.sh"
+LS_DB="$(pwd)/sched.list"
 
 # Configure location of backup directory
 echo -e "\nWhere is the directory that you wish to backup?"
@@ -44,6 +45,7 @@ elif [ "$CHOICE" == "m" ]; then
 	SED_FILESDIR_MONTHLY
 	SED_BUCKET_MONTHLY
 	CRON_MONTHLY
+	/bin/bash $MONTHLY setup $FILES_DIR $BUCKET
 else
 	SED_FILESDIR_DAILY
 	SED_FILESDIR_MONTHLY
@@ -55,5 +57,6 @@ fi
 
 # Remove duplicates
 sort -u -o /etc/cron.d/s3_cron /etc/cron.d/s3_cron
+sort -u -o $LS_DB $LS_DB
 
 echo -e "\nConfiguring done."
