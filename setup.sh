@@ -19,11 +19,6 @@ read FILES_DIR
 echo -e "\nLocation of the bucket (FORMAT: s3://bucket-name):  "
 read BUCKET
 
-# Configure aliases
-alias SED_FILESDIR_DAILY="sed -i 's|FILES_DIR=\"\"|FILES_DIR=\"$FILES_DIR\"|' $DAILY"
-alias SED_BUCKET_DAILY="sed -i 's|BUCKET=\"\"|BUCKET=\"$BUCKET\"|' $DAILY"
-alias CRON_DAILY="echo \"@daily root $DAILY\" >> /etc/cron.d/s3_cron"
-
 # Give the user a choice between monthly or daily backups or both DONE
 echo -en "\nDo you want (d)aily or (m)onthly backups, or (b)oth?  "
 read CHOICE
@@ -35,15 +30,11 @@ done
 
 # Configure for daily, monthly, both
 if [ "$CHOICE" == "d" ]; then
-	SED_FILESDIR_DAILY
-	SED_BUCKET_DAILY
-	CRON_DAILY
+	/bin/bash $DAILY setup $FILES_DIR $BUCKET
 elif [ "$CHOICE" == "m" ]; then
 	/bin/bash $MONTHLY setup $FILES_DIR $BUCKET
 else
-	SED_FILESDIR_DAILY
-	SED_BUCKET_DAILY
-	CRON_DAILY
+	/bin/bash $DAILY setup $FILES_DIR $BUCKET
 	/bin/bash $MONTHLY setup $FILES_DIR $BUCKET
 fi
 
