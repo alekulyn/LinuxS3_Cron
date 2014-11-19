@@ -2,10 +2,11 @@
 
 LS_DB="$(pwd)/sched.list"													# location of backup instructions database
 
-if [[ "$1" == "setup" && -n "$2" && -n "$3" ]]; then
+# Check for argument "setup" (with additional two arguments) or "update"
+if [[ (( "$1" == "setup" && -n "$2" ) && -n "$3" ) ]]; then
 	FILES_DIR="$2"																		# location of files
 	BUCKET="$3"																			# location of the bucket, FORMAT: s3://bucket-name
-	echo -en "How do you wish your tar archive to be compressed?\nOptions: .xz .bz2 .gz (or just hit the 'enter' key for none)\n>> "
+	echo -en "How do you wish your tar archive to be compressed?\nOptions (choose one): .xz .bz2 .gz (or just hit the 'enter' key for none)\n>> "
 	read TAR_EXT
 	
 	# Check if TAR_EXT is valid
@@ -28,10 +29,14 @@ if [[ "$1" == "setup" && -n "$2" && -n "$3" ]]; then
 	fi
 	
 	echo "monthly $ARCHIVE_DATE $TAR_EXT $FILES_DIR $BUCKET" >> $LS_DB
+	echo "@monthly root $(pwd)/$(basename $0) update" >> /etc/cron.d/s3_cron
 elif [[ "$1" == "update" ]]; then
-	## Read each line in sched.list
-	## If line starts with "monthly", read following four variables
-	
-	tar $TAR_EXT $ARCHIVE_DATE $FILES_DIR
-	s3cmd put $ARCHIVE_DATE $BUCKET/$ARCHIVE_DATE
+	## Read each line of sched.list into an array
+	## If line starts with "monthly", run tar and s3cmd
+	while read -a FORMAT; do
+		if [[ ${FORMAT[0]} == "monthly" ]]; do
+			tar ${FORMAT[2]} ${FORMAT[1]} ${FORMAT[3]}
+			s3cmd put ${FORMAT[1]} ${FORMAT[4]}/${FORMAT[1]}
+		fi
+	done < $LS_DB
 fi
