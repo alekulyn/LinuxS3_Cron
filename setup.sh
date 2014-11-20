@@ -9,7 +9,6 @@ echo "Welcome.  Please fill out the following information to setup your LinuxS3_
 # Configure location of backup scripts and files
 DAILY="$(pwd)/dailymirror.sh"
 MONTHLY="$(pwd)/monthlybackup.sh"
-LS_DB="$(pwd)/sched.list"
 
 # Configure location of backup directory
 echo -e "\nWhere is the directory that you wish to backup?"
@@ -38,8 +37,7 @@ else
 	/bin/bash $MONTHLY setup $FILES_DIR $BUCKET
 fi
 
-# Remove duplicates
-sort -u -o /etc/cron.d/s3_cron /etc/cron.d/s3_cron
-sort -u -o $LS_DB $LS_DB
+# Sort and remove duplicates
+/bin/bash $(pwd)/sort.sh
 
 echo -e "\nConfiguring done."

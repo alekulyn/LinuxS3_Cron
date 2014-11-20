@@ -8,4 +8,5 @@ Run "linuxS3_cron.sh setup" to configure.  Run "linuxS3_cron.sh help" for the he
 Features planned:
 - Weekly backups
 - List of scheduled backups
-- Monthly backup compression options
+- Monthly backup compression options (DONE)
+- MySQL DB backup support
