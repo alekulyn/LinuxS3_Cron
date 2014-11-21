@@ -12,7 +12,7 @@ elif [[ "$1" == "update" ]]; then
 	# Read Table of Contents
 	# Fetch each line between the first daily and last daily, and run s3cmd sync
 	grep "ds*de" $LS_DB | read MARKER DS MARKER DE
-	while [[ "$DS" < "$DE" ]]; do
+	while [[ "$DS" -le "$DE" ]]; do
 		sed '"$DS"!d' $LS_DB | read -a FORMAT
 		if [[ ${FORMAT[0]} == "daily" ]]; do
 			s3cmd sync -r ${FORMAT[1]}/ ${FORMAT[2]}/$(basename ${FORMAT[1]})/

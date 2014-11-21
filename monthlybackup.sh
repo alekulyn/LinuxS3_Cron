@@ -31,12 +31,15 @@ if [[ (( "$1" == "setup" && -n "$2" ) && -n "$3" ) ]]; then
 	echo "monthly $ARCHIVE_DATE $TAR_EXT $FILES_DIR $BUCKET" >> $LS_DB
 	echo "@monthly root $(pwd)/$(basename $0) update" >> /etc/cron.d/s3_cron
 elif [[ "$1" == "update" ]]; then
-	# Read each line of sched.list into an array
-	# If line starts with "monthly", run tar and s3cmd
-	while read -a FORMAT; do
+	# Read Table of Contents
+	# Fetch each line between the first monthly and last monthly, and run tar and s3cmd put
+	grep "ms*me" $LS_DB | read MARKER MS MARKER ME
+	while [[ "$MS" -le "$ME" ]]; do
+		sed '"$MS"!d' $LS_DB | read -a FORMAT
 		if [[ ${FORMAT[0]} == "monthly" ]]; do
 			tar ${FORMAT[2]} ${FORMAT[1]} ${FORMAT[3]}
 			s3cmd put ${FORMAT[1]} ${FORMAT[4]}/${FORMAT[1]}
 		fi
-	done < $LS_DB
+		((MS++))
+	done
 fi
