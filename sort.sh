@@ -16,10 +16,20 @@ sort -u -o $LS_DB $LS_DB
 # Find first and last line of daily and monthly listings
 # Store line numbers (+2) in vars
 # http://www.unix.com/shell-programming-and-scripting/17667-using-grep-extract-line-number.html
-dlnstart=$(($(grep -n -m1 "daily" $LS_DB | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2))
-dlnend=$(tac $LS_DB | grep -m1 "daily"); dlnend=$(($(grep -n "$dlnend" $LS_DB | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2))
-mlnstart=$(($(grep -n -m1 "monthly" $LS_DB | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2))
-mlnend=$(tac $LS_DB | grep -m1 "monthly"); mlnend=$(($(grep -n "$mlnend" $LS_DB | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2))
+if [[ $(grep "daily" $LS_DB) ]]; do
+	dlnstart=$(($(grep -n -m1 "daily" $LS_DB | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2))
+	dlnend=$(($(grep -n "daily" $LS_DB | tac | grep -m1 "daily" | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2));
+else
+	dlnstart="nod"
+	dlnend="nod"
+fi
+if [[ $(grep "monthly" $LS_DB) ]]; do
+	mlnstart=$(($(grep -n -m1 "monthly" $LS_DB | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2))
+	mlnend=$(($(grep -n "monthly" $LS_DB | tac | grep -m1 "monthly" | sed -n 's/^\([0-9]*\)[:].*/\1/p') + 2));
+else
+	mlnstart="nom"
+	mlnend="nom"
+fi
 
 # Store line numbers in format "ds $dlnstart de $dlnend ms $mlnstart me $mlnend"
 # Concatenate sorted sched.list file to line number format and overwrite sched.list

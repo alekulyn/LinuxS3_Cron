@@ -17,7 +17,7 @@ if [[ (( "$1" == "setup" && -n "$2" ) && -n "$3" ) ]]; then
 	
 	ARCHIVE_DATE="$(basename $FILES_DIR)_monthlyBackup_$(date +"%m-%Y").tar$TAR_EXT"	# name of the tar archive with the date stamp
 	
-	## tar compression options
+	# tar compression options
 	if [[ "$TAR_EXT" == ".gz" ]]; then
 		TAR_EXT == -zcf
 	elif [[ "$TAR_EXT" == ".bz2" ]]; then
@@ -31,8 +31,8 @@ if [[ (( "$1" == "setup" && -n "$2" ) && -n "$3" ) ]]; then
 	echo "monthly $ARCHIVE_DATE $TAR_EXT $FILES_DIR $BUCKET" >> $LS_DB
 	echo "@monthly root $(pwd)/$(basename $0) update" >> /etc/cron.d/s3_cron
 elif [[ "$1" == "update" ]]; then
-	## Read each line of sched.list into an array
-	## If line starts with "monthly", run tar and s3cmd
+	# Read each line of sched.list into an array
+	# If line starts with "monthly", run tar and s3cmd
 	while read -a FORMAT; do
 		if [[ ${FORMAT[0]} == "monthly" ]]; do
 			tar ${FORMAT[2]} ${FORMAT[1]} ${FORMAT[3]}

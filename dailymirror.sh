@@ -9,11 +9,14 @@ if [[ (( "$1" == "setup" && -n "$2" ) && -n "$3" ) ]]; then
 	echo "daily $FILES_DIR $BUCKET" >> $LS_DB
 	echo "@daily root $(pwd)/$(basename $0) update" >> /etc/cron.d/s3_cron
 elif [[ "$1" == "update" ]]; then
-	## Read each line of sched.list into an array
-	## If line starts with "daily", run s3cmd sync
-	while read -a FORMAT; do
+	# Read Table of Contents
+	# Fetch each line between the first daily and last daily, and run s3cmd sync
+	grep "ds*de" $LS_DB | read MARKER DS MARKER DE
+	while [[ "$DS" < "$DE" ]]; do
+		sed '"$DS"!d' $LS_DB | read -a FORMAT
 		if [[ ${FORMAT[0]} == "daily" ]]; do
 			s3cmd sync -r ${FORMAT[1]}/ ${FORMAT[2]}/$(basename ${FORMAT[1]})/
 		fi
-	done < $LS_DB
+		((DS++))
+	done
 fi
